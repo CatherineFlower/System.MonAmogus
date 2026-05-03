@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}MonAmogus — Проверка сервисов{% endblock %}
+
+{% block header %}
+  <p><strong>Ваш IP:</strong> {{ user_ip }}</p>
+  <div class="row-actions">
+    <button id="refresh-services" type="button">Обновить список</button>
+    <button id="bulk-check-services" type="button" class="btn-secondary">Проверить доступность</button>
+  </div>
+{% endblock %}
+
+{% block content %}
+  <section>
+    <h2>Активные сервисы</h2>
+    <ul id="service-cards" class="grid service-grid"></ul>
+  </section>
+  <div id="toast-wrap" class="toast-wrap" aria-live="polite"></div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/check.js"></script>
+{% endblock %}

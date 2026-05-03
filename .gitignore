@@ -1,0 +1,165 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# =========================
+# Virtual environments
+# =========================
+venv/
+.env/
+.venv/
+ENV/
+env/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Distribution / packaging
+# =========================
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# =========================
+# Installer logs
+# =========================
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =========================
+# Unit test / coverage
+# =========================
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# =========================
+# Type checkers
+# =========================
+.mypy_cache/
+.pyre/
+.pytype/
+
+# =========================
+# Ruff / lint
+# =========================
+.ruff_cache/
+
+# =========================
+# Jupyter Notebook
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# pyenv
+# =========================
+.python-version
+
+# =========================
+# Celery
+# =========================
+celerybeat-schedule
+celerybeat.pid
+
+# =========================
+# Databases
+# =========================
+*.sqlite3
+*.db
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# Django
+# =========================
+staticfiles/
+media/
+
+# Migrations (если НЕ хочешь хранить миграции)
+# */migrations/
+# !*/migrations/__init__.py
+
+# =========================
+# FastAPI / Uvicorn
+# =========================
+*.pid
+
+# =========================
+# IDE
+# =========================
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# Sublime
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Docker
+# =========================
+docker-compose.override.yml
+
+# =========================
+# Temporary files
+# =========================
+tmp/
+temp/
+*.tmp
+
+# =========================
+# Secrets / keys
+# =========================
+*.pem
+*.key
+*.crt
+*.p12
+secrets/

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ service.name }}{% endblock %}
+
+{% block content %}
+  <section class="card">
+    <h2>{{ service.name }}</h2>
+    <p><strong>URL:</strong> <a href="{{ service.url }}" target="_blank" rel="noopener">{{ service.url }}</a></p>
+    <p><strong>Текущий статус:</strong>
+      <span class="status-pill {% if current_status == 'OK' %}status-available{% elif current_status == 'FAIL' %}status-unavailable{% else %}status-pending{% endif %}">{{ current_status }}</span>
+    </p>
+    <form method="post" action="/services/{{ service.id }}/check">
+      <button type="submit">Запустить проверку вручную</button>
+    </form>
+  </section>
+
+  <section class="grid history-grid" style="margin-top:1rem;">
+    <article class="card">
+      <h3>Последние проверки</h3>
+      {% if checks %}
+        <ul>
+          {% for check in checks %}
+            <li>{{ check.created_at }} — {% if check.is_available %}OK{% else %}FAIL{% endif %}, HTTP {{ check.status_code }}, {{ check.response_time_ms }} ms{% if check.error_text %} ({{ check.error_text }}){% endif %}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">Проверок пока нет.</p>
+      {% endif %}
+    </article>
+
+    <article class="card">
+      <h3>Клиентские события</h3>
+      {% if events %}
+        <ul>
+          {% for event in events %}
+            <li>{{ event.created_at }} — {{ event.event_type }} — {{ event.payload }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">Событий пока нет.</p>
+      {% endif %}
+    </article>
+  </section>
+{% endblock %}

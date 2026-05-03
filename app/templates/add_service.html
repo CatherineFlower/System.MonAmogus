@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Добавить сервис{% endblock %}
+
+{% block content %}
+  <section class="card" style="max-width:560px;">
+    <h2>Добавить сервис</h2>
+    {% if error %}<p class="status-pill status-unavailable">{{ error }}</p>{% endif %}
+    <form method="post" action="/services/new" class="form-grid">
+      <label>Название <input type="text" name="name" required></label>
+      <label>URL <input type="url" name="url" required></label>
+      <button type="submit">Сохранить</button>
+    </form>
+  </section>
+{% endblock %}

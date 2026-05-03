@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MonAmogus Demo</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+  <main class="site-main container">
+    <section class="card" style="margin-top:2rem;max-width:900px;">
+      <h1>Демо мониторинга клиента</h1>
+      <p>Логи клиента.</p>
+
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+        <button id="check-ok">Сымитировать проверку: OK</button>
+        <button id="check-error">Сымитировать проверку: ERROR</button>
+        <button id="throw-error">Сгенерировать JS-ошибку</button>
+        <button id="promise-error">Сгенерировать Promise-ошибку</button>
+        <button id="refresh-all">Обновить</button>
+      </div>
+
+      <p id="demo-status">Текущий статус: ...</p>
+
+      <h3>Последние проверки</h3>
+      <pre id="checks-log" style="max-height:160px;overflow:auto;background:#111;color:#d4ffd4;padding:0.75rem;border-radius:8px;"></pre>
+
+      <h3>Клиентские события</h3>
+      <pre id="events-log" style="max-height:220px;overflow:auto;background:#111;color:#d4ffd4;padding:0.75rem;border-radius:8px;"></pre>
+    </section>
+  </main>
+
+  <script>
+    window.MONITOR_ENDPOINT = '/demo-api/client-events';
+    window.MONITOR_SERVICE_ID = 999;
+  </script>
+  <script src="/static/js/monitor.js"></script>
+  <script>
+    var statusEl = document.getElementById('demo-status');
+    var checksLogEl = document.getElementById('checks-log');
+    var eventsLogEl = document.getElementById('events-log');
+
+    function setChecks(items) {
+      if (!items.length) {
+        checksLogEl.textContent = 'Проверок пока нет';
+        return;
+      }
+      checksLogEl.textContent = items.slice(-10).reverse().map(function (item) {
+        return '#' + item.id + ' [' + item.mode.toUpperCase() + '] code=' + item.http_code + ' latency=' + item.latency_ms + 'ms at ' + item.created_at;
+      }).join('\n');
+    }
+
+    function setEvents(items) {
+      if (!items.length) {
+        eventsLogEl.textContent = 'Событий пока нет';
+        return;
+      }
+      eventsLogEl.textContent = items.slice(-10).reverse().map(function (item) {
+        var payload = item.payload || {};
+        var errorText = payload.error_text ? (' | error: ' + payload.error_text) : '';
+        var details = [];
+        if (payload.browser_name) details.push('browser=' + payload.browser_name);
+        if (payload.device_type) details.push('device=' + payload.device_type);
+        if (typeof payload.load_time_ms === 'number') details.push('load=' + payload.load_time_ms + 'ms');
+
+        return '#' + item.id + ' ' + item.event_type + ' at ' + item.created_at + errorText + (details.length ? ' | ' + details.join(', ') : '');
+      }).join('\n');
+    }
+
+    function refreshAll() {
+      return fetch('/demo-api/status')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          statusEl.textContent = 'Текущий статус: ' + String(data.current_status).toUpperCase();
+          setChecks(data.latest_checks || []);
+          setEvents(data.latest_events || []);
+        });
+    }
+
+    function pushCheck(mode) {
+      return fetch('/demo-api/checks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: mode }),
+      }).then(function () { return refreshAll(); });
+    }
+
+    document.getElementById('check-ok').addEventListener('click', function () {
+      pushCheck('ok');
+    });
+
+    document.getElementById('check-error').addEventListener('click', function () {
+      pushCheck('error');
+    });
+
+    document.getElementById('throw-error').addEventListener('click', function () {
+      setTimeout(function () {
+        throw new Error('Demo artificial JS error');
+      }, 0);
+    });
+
+    document.getElementById('promise-error').addEventListener('click', function () {
+      setTimeout(function () {
+        Promise.reject(new Error('Demo artificial Promise rejection'));
+      }, 0);
+    });
+
+    document.getElementById('refresh-all').addEventListener('click', refreshAll);
+
+    window.addEventListener('error', function () {
+      setTimeout(refreshAll, 100);
+    });
+    window.addEventListener('unhandledrejection', function () {
+      setTimeout(refreshAll, 100);
+    });
+
+    refreshAll().catch(function () {
+      statusEl.textContent = 'Ошибка загрузки демо-данных.';
+    });
+  </script>
+</body>
+</html>
