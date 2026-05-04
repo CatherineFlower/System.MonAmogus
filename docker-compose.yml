@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16
+    container_name: monamogus_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: monamogus_db
+      POSTGRES_USER: monamogus_user
+      POSTGRES_PASSWORD: monamogus_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - monamogus_pg_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: monamogus_app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg2://monamogus_user:monamogus_password@db:5432/monamogus_db
+    ports:
+      - "8000:8000"
+
+volumes:
+  monamogus_pg_data:

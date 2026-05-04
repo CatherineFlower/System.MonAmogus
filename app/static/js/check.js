@@ -89,16 +89,26 @@
     var item = document.createElement('li');
     item.className = 'service-card card';
 
+    var titleRow = document.createElement('div');
+    titleRow.className = 'service-title-row';
+
     var title = document.createElement('h3');
     var titleLink = document.createElement('a');
     titleLink.href = '/services/' + service.id;
     titleLink.textContent = service.name;
     title.appendChild(titleLink);
-    var link = document.createElement('a');
-    link.href = service.url; link.target = '_blank'; link.rel = 'noopener'; link.textContent = service.url;
 
-    var status = document.createElement('p');
+    var status = document.createElement('span');
     setStatus(status, 'pending');
+
+    titleRow.append(title, status);
+
+    var link = document.createElement('a');
+    link.href = service.url;
+    link.target = '_blank';
+    link.rel = 'noopener';
+    link.textContent = service.url;
+    link.className = 'service-url';
 
     var probes = document.createElement('div');
     probes.className = 'probe-grid';
@@ -115,7 +125,7 @@
     var checkBtn = document.createElement('button'); checkBtn.textContent = 'Проверить';
 
     actions.append(checkBtn);
-    item.append(title, link, status, probes, actions);
+    item.append(titleRow, link, probes, actions);
 
     var cardState = { service: service, statusEl: status, probeEls: probeEls, checkBtn: checkBtn };
     checkBtn.addEventListener('click', function (event) {
@@ -130,6 +140,37 @@
     serviceCards.push(cardState);
 
     return item;
+  }
+
+  async function addService(event) {
+    event.preventDefault();
+
+    var name = serviceNameInput.value.trim();
+    var url = serviceUrlInput.value.trim();
+
+    if (!name || !url) {
+      notify('error', 'Заполните название и URL');
+      return;
+    }
+
+    try {
+      var response = await fetch(API_SERVICES_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, url: url })
+      });
+
+      if (!response.ok) {
+        notify('error', 'Не удалось добавить сервис');
+        return;
+      }
+
+      addServiceForm.reset();
+      notify('success', 'Сервис добавлен');
+      await loadServices();
+    } catch (_) {
+      notify('error', 'Ошибка подключения к серверу');
+    }
   }
 
   async function loadServices() {
@@ -160,6 +201,8 @@
 
   if (refreshButton) refreshButton.addEventListener('click', loadServices);
   if (bulkCheckButton) bulkCheckButton.addEventListener('click', runBulkChecksSequentially);
+
+  if (addServiceForm) addServiceForm.addEventListener('submit', addService);
 
   loadServices();
 })();
