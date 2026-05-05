@@ -61,6 +61,19 @@ def get_current_admin(request: Request, db: Session = Depends(get_db)) -> AdminU
     return admin
 
 
+def is_admin_request(request: Request, db: Session) -> bool:
+    cookie = request.cookies.get(SESSION_COOKIE_NAME)
+    if not cookie:
+        return False
+
+    username = parse_session_cookie(cookie)
+    if not username:
+        return False
+
+    admin = db.query(AdminUser).filter(AdminUser.username == username).first()
+    return admin is not None
+
+
 def ensure_default_admin(db: Session) -> None:
     """Create default admin account for MVP if no admin user exists."""
     existing = db.query(AdminUser).first()

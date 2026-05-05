@@ -6,47 +6,45 @@
   <p><strong>Ваш IP:</strong> {{ user_ip }}</p>
 
   <div class="dashboard-top">
+
+    <!-- УПРАВЛЕНИЕ -->
     <div class="dashboard-actions card">
       <h2>Управление</h2>
+
       <div class="row-actions">
-        <button id="refresh-services" type="button">Обновить список</button>
-        <button id="bulk-check-services" type="button" class="btn-secondary">Проверить доступность</button>
+        <button id="refresh-services" type="button">
+          Обновить список
+        </button>
+
+        <button id="bulk-check-services" type="button" class="btn-secondary">
+          Проверить доступность
+        </button>
       </div>
     </div>
 
-    <form id="add-service-form" class="card add-service-form">
-      <h2>Добавить сервис</h2>
-
-      <label>
-        Название сервиса
-        <input id="service-name" name="name" type="text" placeholder="Например: MIREA" required>
-      </label>
-
-      <label>
-        URL сервиса
-        <input id="service-url" name="url" type="url" placeholder="https://www.mirea.ru" required>
-      </label>
-
-      <button type="submit">Добавить</button>
-    </form>
   </div>
 {% endblock %}
 
 {% block content %}
+
+  <!-- СПИСОК СЕРВИСОВ -->
   <section>
     <h2>Активные сервисы</h2>
     <ul id="service-cards" class="grid service-grid"></ul>
   </section>
 
-  <section class="demo-section">
-    <h2>Демо мониторинга клиента</h2>
-    <p class="muted">Демо-страница позволяет сгенерировать проверки и клиентские события.</p>
-    <iframe class="demo-frame" src="/demo"></iframe>
-  </section>
-
+  <!-- TOAST -->
   <div id="toast-wrap" class="toast-wrap" aria-live="polite"></div>
+
 {% endblock %}
 
 {% block scripts %}
+
+  <!-- ПРОБРОС РОЛИ В JS -->
+  <script>
+    window.IS_ADMIN = {{ "true" if is_admin else "false" }};
+  </script>
+
   <script src="/static/js/check.js"></script>
+
 {% endblock %}

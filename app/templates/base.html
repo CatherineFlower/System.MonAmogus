@@ -7,6 +7,24 @@
   <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
+
+  <header class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="topbar-logo">MonAmogus</a>
+
+    <nav class="topbar-nav">
+      <a href="/">Главная</a>
+        {% if is_admin %}
+      <a href="/admin/services">Админ-панель</a>
+      <a href="/demo">Демо</a>
+        <a href="/admin/logout" class="nav-danger">Выйти</a>
+      {% else %}
+        <a href="/admin/login" class="nav-primary">Войти</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
   <header class="site-header">
     <div class="container">
       <h1><a href="/" style="text-decoration:none;color:inherit;">MonAmogus</a></h1>
@@ -21,6 +39,7 @@
   <footer class="site-footer">
     <div class="container">MonAmogus MVP — мониторинг доступности сервисов.</div>
   </footer>
+
   {% block scripts %}{% endblock %}
 </body>
 </html>

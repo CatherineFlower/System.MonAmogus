@@ -52,7 +52,15 @@ def _service_rows(db: Session) -> list[Service]:
 
 @router.get("/services", response_class=HTMLResponse, dependencies=[Depends(get_current_admin)])
 def admin_services_page(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
-    return templates.TemplateResponse(request, "admin_services.html", {"services": _service_rows(db), "error": None})
+    return templates.TemplateResponse(
+        request,
+        "admin_services.html",
+        {
+            "services": _service_rows(db),
+            "error": None,
+            "is_admin": True,
+        },
+    )
 
 
 @router.post("/services/create", dependencies=[Depends(get_current_admin)])
@@ -99,3 +107,9 @@ def admin_service_delete(service_id: int, db: Session = Depends(get_db)):
         db.delete(service)
         db.commit()
     return RedirectResponse(url="/admin/services", status_code=303)
+
+@router.get("/logout")
+def admin_logout():
+    response = RedirectResponse(url="/", status_code=303)
+    response.delete_cookie(SESSION_COOKIE_NAME)
+    return response

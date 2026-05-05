@@ -14,6 +14,7 @@
     pending: { label: 'Ожидает проверки', color: '#6b7280' },
     checking: { label: 'Проверка...', color: '#2563eb' },
     available: { label: 'Доступен', color: '#15803d' },
+    degraded: { label: 'Проблемы', color: '#f59e0b' },
     unavailable: { label: 'Недоступен', color: '#b91c1c' },
     timeout: { label: 'Таймаут (5s)', color: '#b45309' },
     network_error: { label: 'Ошибка сети при проверке', color: '#7c2d12' },
@@ -80,7 +81,13 @@
       cardState.probeEls[i].textContent = statusInfo(result.status).label + ' · ' + result.response_time_ms + ' ms';
     }
 
-    setStatus(cardState.statusEl, successCount >= 2 ? 'available' : 'unavailable');
+    if (successCount === PROBES_COUNT) {
+      setStatus(cardState.statusEl, 'available');
+    } else if (successCount === 0) {
+      setStatus(cardState.statusEl, 'unavailable');
+    } else {
+      setStatus(cardState.statusEl, 'degraded');
+    }
     checkBtn.disabled = false;
     if (bulkCheckButton) bulkCheckButton.disabled = false;
   }
@@ -99,7 +106,7 @@
     title.appendChild(titleLink);
 
     var status = document.createElement('span');
-    setStatus(status, 'pending');
+    setStatus(status, service.last_check_status || 'pending');
 
     titleRow.append(title, status);
 
@@ -135,8 +142,14 @@
 
     item.addEventListener('click', function (event) {
       if (event.target.closest('a, button')) return;
-      window.location.href = '/services/' + service.id;
-    });
+      if (!window.IS_ADMIN) {
+        alert("Доступ только для администратора");
+        window.location.href = "/admin/login";
+        return;
+      }
+
+      window.location.href = `/services/${service.id}`;
+      });
     serviceCards.push(cardState);
 
     return item;
@@ -201,8 +214,13 @@
 
   if (refreshButton) refreshButton.addEventListener('click', loadServices);
   if (bulkCheckButton) bulkCheckButton.addEventListener('click', runBulkChecksSequentially);
-
   if (addServiceForm) addServiceForm.addEventListener('submit', addService);
 
-  loadServices();
+  document.addEventListener('DOMContentLoaded', loadServices);
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) {
+      loadServices();
+    }
+  });
 })();
