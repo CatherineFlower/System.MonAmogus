@@ -1,7 +1,7 @@
 """Admin authentication and protected admin pages."""
 
-from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi import APIRouter, Depends, Form, Request, HTTPException
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
@@ -100,13 +100,33 @@ def admin_service_edit(request: Request, service_id: int, name: str = Form(...),
     return RedirectResponse(url="/admin/services", status_code=303)
 
 
-@router.post("/services/{service_id}/delete", dependencies=[Depends(get_current_admin)])
-def admin_service_delete(service_id: int, db: Session = Depends(get_db)):
-    service = db.query(Service).filter(Service.id == service_id).first()
-    if service:
-        db.delete(service)
-        db.commit()
-    return RedirectResponse(url="/admin/services", status_code=303)
+@router.delete(
+    "/services/{service_id}",
+    dependencies=[Depends(get_current_admin)]
+)
+def admin_service_delete(
+    service_id: int,
+    db: Session = Depends(get_db)
+):
+    service = (
+        db.query(Service)
+        .filter(Service.id == service_id)
+        .first()
+    )
+
+    if not service:
+        raise HTTPException(
+            status_code=404,
+            detail="Service not found"
+        )
+
+    db.delete(service)
+    db.commit()
+
+    return JSONResponse({
+        "success": True,
+        "deleted_id": service_id
+    })
 
 @router.get("/logout")
 def admin_logout():

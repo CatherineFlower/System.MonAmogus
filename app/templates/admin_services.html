@@ -33,13 +33,47 @@
               <td><input type="number" name="sort_order" value="{{ service.sort_order or 0 }}"></td>
               <td class="row-actions">
                 <button type="submit" class="btn-secondary">Изменить</button>
-            </form>
-                <form method="post" action="/admin/services/{{ service.id }}/delete">
-                  <button type="submit" class="btn-danger">Удалить</button>
-                </form>
+                  <button type="button" class="btn-danger" onclick="deleteService({{ service.id }})">
+                  Удалить
+                </button>
               </td>
-          </tr>
+            </form>
+            <script>
+            async function deleteService(serviceId) {
+
+              const confirmed = confirm(
+                "Удалить сервис?"
+              );
+
+              if (!confirmed) {
+                return;
+              }
+
+              try {
+
+                const response = await fetch(
+                  `/admin/services/${serviceId}`,
+                  {
+                    method: "DELETE"
+                  }
+                );
+
+                if (!response.ok) {
+                  alert("Ошибка удаления");
+                  return;
+                }
+
+                window.location.reload();
+
+              } catch (error) {
+
+                alert("Ошибка подключения");
+
+              }
+            }
+            </script>
         {% endfor %}
+
         </tbody>
       </table>
     </div>

@@ -2,8 +2,8 @@
 
 {% block title %}MonAmogus — Проверка сервисов{% endblock %}
 
-{% block header %}
-  <p><strong>Ваш IP:</strong> {{ user_ip }}</p>
+{% block content %}
+    <p><strong>Ваш IP:</strong> {{ user_ip }}</p>
 
   <div class="dashboard-top">
 
@@ -23,15 +23,51 @@
     </div>
 
   </div>
-{% endblock %}
-
-{% block content %}
 
   <!-- СПИСОК СЕРВИСОВ -->
   <section>
-    <h2>Активные сервисы</h2>
-    <ul id="service-cards" class="grid service-grid"></ul>
-  </section>
+      <h2>Активные сервисы</h2>
+
+      <ul id="service-cards" class="grid service-grid">
+        {% if services %}
+          {% for service in services %}
+            <li class="service-card card" data-service-id="{{ service.id }}">
+              <div class="service-title-row">
+                <h3>
+                  {% if is_admin %}
+                    <a href="/services/{{ service.id }}">{{ service.name }}</a>
+                  {% else %}
+                    <span>{{ service.name }}</span>
+                  {% endif %}
+                </h3>
+
+                <span class="status-pill status-pending">
+                  Ожидает проверки
+                </span>
+              </div>
+
+              <a class="service-url" href="{{ service.url }}" target="_blank" rel="noopener">
+                {{ service.url }}
+              </a>
+
+              <div class="probe-grid">
+                <div class="probe-item">—</div>
+                <div class="probe-item">—</div>
+                <div class="probe-item">—</div>
+              </div>
+
+              <div class="row-actions">
+                <button type="button">Проверить</button>
+              </div>
+            </li>
+          {% endfor %}
+        {% else %}
+          <li class="card empty-state">
+            Сейчас нет активных сайтов для отслеживания.
+          </li>
+        {% endif %}
+      </ul>
+    </section>
 
   <!-- TOAST -->
   <div id="toast-wrap" class="toast-wrap" aria-live="polite"></div>
@@ -39,12 +75,8 @@
 {% endblock %}
 
 {% block scripts %}
-
-  <!-- ПРОБРОС РОЛИ В JS -->
   <script>
     window.IS_ADMIN = {{ "true" if is_admin else "false" }};
   </script>
-
   <script src="/static/js/check.js"></script>
-
 {% endblock %}

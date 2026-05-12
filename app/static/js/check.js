@@ -8,6 +8,9 @@
   var grid = document.getElementById('service-cards');
   var refreshButton = document.getElementById('refresh-services');
   var bulkCheckButton = document.getElementById('bulk-check-services');
+  var addServiceForm = document.getElementById('add-service-form');
+  var serviceNameInput = document.getElementById('service-name');
+  var serviceUrlInput = document.getElementById('service-url');
   var serviceCards = [];
 
   var STATUS_META = {
@@ -194,7 +197,10 @@
       var response = await fetch(API_SERVICES_URL);
       if (!response.ok) throw new Error('services_failed');
       var services = await response.json();
-      if (!Array.isArray(services) || services.length === 0) { grid.innerHTML = '<li>Активные сервисы не найдены.</li>'; return; }
+      if (!Array.isArray(services) || services.length === 0) {
+        grid.innerHTML = '<li class="card empty-state">Сейчас нет активных сайтов для отслеживания.</li>';
+        return;
+      }
       grid.innerHTML = '';
       services.forEach(function (service) { grid.appendChild(renderCard(service)); });
     } catch (_) {
@@ -216,11 +222,13 @@
   if (bulkCheckButton) bulkCheckButton.addEventListener('click', runBulkChecksSequentially);
   if (addServiceForm) addServiceForm.addEventListener('submit', addService);
 
-  document.addEventListener('DOMContentLoaded', loadServices);
+  function initPage() {
+    loadServices();
+  }
 
-  document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) {
-      loadServices();
-    }
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPage);
+  } else {
+    initPage();
+  }
 })();

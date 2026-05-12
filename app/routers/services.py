@@ -30,13 +30,21 @@ def _get_public_ip() -> str:
 
 @web_router.get("/", response_class=HTMLResponse)
 def index_page(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
+    services = (
+        db.query(Service)
+        .filter(Service.is_active == True)
+        .order_by(Service.sort_order.asc(), Service.id.asc())
+        .all()
+    )
+
     return templates.TemplateResponse(
         request,
         "index.html",
         {
             "user_ip": _get_public_ip(),
             "is_admin": is_admin_request(request, db),
-        }
+            "services": services,
+        },
     )
 
 
@@ -78,6 +86,7 @@ def service_detail_page(
             "checks": checks,
             "events": events,
             "current_status": current_status,
+            "is_admin": is_admin_request(request, db),
         },
     )
 
@@ -157,3 +166,16 @@ def get_service(id: int, db: Session = Depends(get_db)) -> ServiceOut:
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
     return ServiceOut.model_validate(service, from_attributes=True)
+
+@router.delete("/{id}", status_code=204)
+def delete_service(
+    id: int,
+    db: Session = Depends(get_db)
+):
+    service = db.query(Service).filter(Service.id == id).first()
+
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    db.delete(service)
+    db.commit()
