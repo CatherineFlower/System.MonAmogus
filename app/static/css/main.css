@@ -68,6 +68,7 @@ a:hover { color: var(--primary-hover); }
   padding: var(--space-4);
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
+
 }
 .grid { display: grid; gap: var(--space-4); }
 .service-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); list-style: none; padding: 0; }
@@ -377,12 +378,6 @@ th, td { border-bottom: 1px solid #334155; padding: .6rem; text-align: left; ver
 
 .site-main {
   padding-top: 24px;
-}
-
-.admin-page,
-.admin-services,
-.card:first-child {
-  margin-top: 28px;
 }
 
 .dashboard-actions {

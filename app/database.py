@@ -33,18 +33,18 @@ def init_db() -> None:
 
     db = SessionLocal()
     try:
-        demo_services = [
-            ("MAX", "https://max.ru"),
-            ("VK", "https://vk.ru"),
-            ("Yandex", "https://yandex.ru"),
-            ("Ya", "https://ya.ru"),
-            ("OK", "https://ok.ru"),
-        ]
+        # demo_services = [
+        #     ("MAX", "https://max.ru"),
+        #     ("VK", "https://vk.ru"),
+        #     ("Yandex", "https://yandex.ru"),
+        #     ("Ya", "https://ya.ru"),
+        #     ("OK", "https://ok.ru"),
+        # ]
 
-        for name, url in demo_services:
-            exists = db.query(Service).filter(Service.url == url).first()
-            if not exists:
-                db.add(Service(name=name, url=url, is_active=True))
+        # for name, url in demo_services:
+        #     exists = db.query(Service).filter(Service.url == url).first()
+        #     if not exists:
+        #         db.add(Service(name=name, url=url, is_active=True))
 
         db.commit()
     finally:
