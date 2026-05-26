@@ -7,7 +7,7 @@
     {% if error %}<p class="status-pill status-unavailable">{{ error }}</p>{% endif %}
     <form method="post" action="/admin/services/create" class="form-grid">
       <label>Название <input type="text" name="name" required></label>
-      <label>URL <input type="text" name="url" required></label>
+      <label>Ссылка <input type="text" name="url" required></label>
       <label>Описание <input type="text" name="description"></label>
       <label>Приоритет <input type="number" name="sort_order" value="0"></label>
       <button type="submit">Создать</button>
@@ -19,7 +19,7 @@
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>ID</th><th>Name</th><th>URL</th><th>Description</th><th>Active</th><th>Priority</th><th>Действия</th></tr>
+          <tr><th>ID</th><th>Имя</th><th>Ссылка</th><th>Описание</th><th>Статус</th><th>Приоритет</th><th>Действия</th></tr>
         </thead>
         <tbody>
         {% for service in services %}
